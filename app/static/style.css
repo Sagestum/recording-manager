@@ -114,9 +114,10 @@ h2 { font-size: 1.05rem; margin-top: 0; }
   margin-bottom: 0.75rem;
 }
 
-.checkbox-col { width: 2.25rem; max-width: 2.25rem; padding: 0.5rem 0 !important; text-align: center; }
+.checkbox-col { width: 2.25rem; max-width: 2.25rem; padding: 0.5rem 0 !important; }
+.data-table th.checkbox-col, .data-table td.checkbox-col { text-align: center; }
 .checkbox-col input[type="checkbox"] { margin: 0; }
-td.checkbox-col:has(input:checked) { background: var(--checked-bg); }
+.data-table tbody tr:has(.checkbox-col input:checked) { background: var(--checked-bg); }
 
 .tag {
   display: inline-block;
