@@ -40,7 +40,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem clamp(1rem, 4vw, 4rem);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
@@ -61,7 +61,13 @@ body {
 .topbar nav a:hover { background: var(--bg); color: var(--text); }
 .topbar nav a.active { background: var(--accent); color: #fff; }
 
-main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+main {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 4vw, 4rem);
+  box-sizing: border-box;
+}
 
 h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
 h2 { font-size: 1.05rem; margin-top: 0; }
