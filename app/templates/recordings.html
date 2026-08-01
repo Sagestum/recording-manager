@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Aufnahmen{% endblock %}
+{% block content %}
+<h1>Abgeschlossene Aufnahmen</h1>
+<p class="hint">Aufnahmen, die bereits fertig auf der Festplatte liegen. Nur Aufnahmen mit passendem Muster werden automatisch gelöscht.</p>
+
+{% if error %}
+<div class="banner error">Verbindung zur Box fehlgeschlagen: {{ error }}</div>
+{% endif %}
+
+<div class="table-wrap">
+<table class="data-table">
+<thead>
+<tr>
+  <th>Titel</th>
+  <th>Sender</th>
+  <th>Aufgenommen am</th>
+  <th>Länge</th>
+  <th>Größe</th>
+  <th>Muster</th>
+  <th>Löschung</th>
+  <th></th>
+</tr>
+</thead>
+<tbody>
+{% for r in rows %}
+<tr class="{{ 'expired' if r.expired else '' }}">
+  <td>{{ r.eventname }}</td>
+  <td>{{ r.servicename }}</td>
+  <td>{{ r.recordingtime | fmt_ts }}</td>
+  <td>{{ r.length }}</td>
+  <td>{{ r.filesize_readable }}</td>
+  <td>
+    {% if r.pattern %}
+      <span class="tag">{{ r.pattern }} · {{ r.days }} Tage</span>
+    {% else %}
+      <span class="tag muted">kein Muster</span>
+    {% endif %}
+  </td>
+  <td>
+    {% if r.expiry %}
+      {{ r.expiry | fmt_ts }}
+      {% if r.expired %}<span class="badge danger">überfällig</span>{% endif %}
+    {% else %}
+      -
+    {% endif %}
+  </td>
+  <td class="actions">
+    <form method="post" action="/recordings/delete" onsubmit="return confirm('Aufnahme \'{{ r.eventname }}\' wirklich löschen?');">
+      <input type="hidden" name="service_ref" value="{{ r.serviceref }}">
+      <input type="hidden" name="eventname" value="{{ r.eventname }}">
+      <button class="btn small danger" type="submit">Löschen</button>
+    </form>
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="8">Keine Aufnahmen gefunden.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

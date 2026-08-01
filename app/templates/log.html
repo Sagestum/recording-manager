@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Log{% endblock %}
+{% block content %}
+<h1>Lösch-Log</h1>
+<p class="hint">Protokoll aller automatischen und manuellen Löschungen.</p>
+
+<div class="table-wrap">
+<table class="data-table">
+<thead>
+<tr>
+  <th>Zeitpunkt</th>
+  <th>Titel</th>
+  <th>Muster</th>
+  <th>Aufgenommen am</th>
+  <th>Ergebnis</th>
+  <th>Meldung</th>
+</tr>
+</thead>
+<tbody>
+{% for e in entries %}
+<tr>
+  <td>{{ e.deleted_at | fmt_ts }}</td>
+  <td>{{ e.eventname }}</td>
+  <td>{{ e.pattern }}</td>
+  <td>{{ e.recordingtime | fmt_ts }}</td>
+  <td>
+    {% if e.success %}
+      <span class="badge ok">gelöscht</span>
+    {% else %}
+      <span class="badge danger">fehlgeschlagen</span>
+    {% endif %}
+  </td>
+  <td>{{ e.message }}</td>
+</tr>
+{% else %}
+<tr><td colspan="6">Noch keine Einträge.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

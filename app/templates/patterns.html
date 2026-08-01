@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Muster{% endblock %}
+{% block content %}
+<h1>Lösch-Muster</h1>
+<p class="hint">Trifft der Titel einer Aufnahme auf ein Muster zu, wird sie nach der angegebenen Anzahl Tage automatisch gelöscht. Aufnahmen ohne passendes Muster bleiben unangetastet.</p>
+
+<div class="card">
+  <h2>Neues Muster</h2>
+  <form method="post" action="/patterns" class="pattern-form">
+    <label>
+      Muster (Text, der im Titel enthalten sein muss)
+      <input type="text" name="pattern" placeholder="z. B. Newstime" required>
+    </label>
+    <label class="narrow">
+      Löschen nach (Tage)
+      <input type="number" name="days" min="1" value="3" required>
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" name="is_regex" value="true"> als Regex interpretieren
+    </label>
+    <button class="btn" type="submit">Hinzufügen</button>
+  </form>
+</div>
+
+<div class="table-wrap">
+<table class="data-table">
+<thead>
+<tr>
+  <th>Muster</th>
+  <th>Tage</th>
+  <th>Regex</th>
+  <th>Aktiv</th>
+  <th></th>
+</tr>
+</thead>
+<tbody>
+{% for p in patterns %}
+<tr>
+  <td><input type="text" name="pattern" value="{{ p.pattern }}" form="pf-{{ p.id }}" required></td>
+  <td class="narrow"><input type="number" name="days" min="1" value="{{ p.days }}" form="pf-{{ p.id }}" required></td>
+  <td><input type="checkbox" name="is_regex" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.is_regex }}></td>
+  <td><input type="checkbox" name="enabled" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.enabled }}></td>
+  <td class="actions">
+    <form id="pf-{{ p.id }}" method="post" action="/patterns/{{ p.id }}/update" class="inline-form"></form>
+    <button class="btn small" type="submit" form="pf-{{ p.id }}">Speichern</button>
+    <form id="pfd-{{ p.id }}" method="post" action="/patterns/{{ p.id }}/delete" class="inline-form"
+          onsubmit="return confirm('Muster \'{{ p.pattern }}\' wirklich löschen?');"></form>
+    <button class="btn small danger" type="submit" form="pfd-{{ p.id }}">Löschen</button>
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="5">Noch keine Muster angelegt.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

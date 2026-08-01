@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Timer{% endblock %}
+{% block content %}
+<h1>Kommende Aufnahmen (Timer)</h1>
+<p class="hint">Alle geplanten Timer, inklusive der von AutoTimer-Liste automatisch angelegten.</p>
+
+{% if error %}
+<div class="banner error">Verbindung zur Box fehlgeschlagen: {{ error }}</div>
+{% endif %}
+
+<div class="table-wrap">
+<table class="data-table">
+<thead>
+<tr>
+  <th>Titel</th>
+  <th>Sender</th>
+  <th>Beginn</th>
+  <th>Ende</th>
+  <th>Status</th>
+</tr>
+</thead>
+<tbody>
+{% for r in rows %}
+<tr>
+  <td>{{ r.name }}</td>
+  <td>{{ r.servicename }}</td>
+  <td>{{ r.begin | fmt_ts }}</td>
+  <td>{{ r.end | fmt_ts }}</td>
+  <td><span class="badge status-{{ r.status }}">{{ r.status }}</span></td>
+</tr>
+{% else %}
+<tr><td colspan="5">Keine Timer gefunden.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

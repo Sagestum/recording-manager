@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Enigma2 Recording Manager{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📼 Recording Manager</div>
+  <nav>
+    <a href="/recordings" class="{{ 'active' if active == 'recordings' else '' }}">Aufnahmen</a>
+    <a href="/timers" class="{{ 'active' if active == 'timers' else '' }}">Timer</a>
+    <a href="/patterns" class="{{ 'active' if active == 'patterns' else '' }}">Muster</a>
+    <a href="/log" class="{{ 'active' if active == 'log' else '' }}">Log</a>
+    <a href="/settings" class="{{ 'active' if active == 'settings' else '' }}">Einstellungen</a>
+  </nav>
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

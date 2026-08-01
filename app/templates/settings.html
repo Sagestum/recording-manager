@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Einstellungen{% endblock %}
+{% block content %}
+<h1>Einstellungen</h1>
+
+<div class="card">
+  <h2>Box-Verbindung</h2>
+  <p><strong>{{ enigma_host }}:{{ enigma_port }}</strong></p>
+  {% if status_info %}
+    <p><span class="badge ok">erreichbar</span> {% if status_info.inStandby == 'true' %}(Standby){% endif %}</p>
+  {% else %}
+    <p><span class="badge danger">nicht erreichbar</span> {{ status_error }}</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Hintergrund-Check</h2>
+  <form method="post" action="/settings" class="pattern-form">
+    <label class="narrow">
+      Prüfintervall (Stunden)
+      <input type="number" name="interval_hours" min="1" value="{{ interval }}" required>
+    </label>
+    <button class="btn" type="submit">Speichern</button>
+  </form>
+
+  <table class="kv-table">
+    <tr><td>Letzter Check</td><td>{{ last_check_at | fmt_ts if last_check_at else '-' }}</td></tr>
+    <tr><td>Ergebnis</td><td>{{ last_check_summary or '-' }}</td></tr>
+    <tr><td>Nächster Check</td><td>{{ next_run.strftime('%d.%m.%Y %H:%M') if next_run else '-' }}</td></tr>
+  </table>
+
+  <form method="post" action="/settings/run-now">
+    <button class="btn small" type="submit">Jetzt prüfen</button>
+  </form>
+</div>
+{% endblock %}
