@@ -4,7 +4,7 @@ services:
     container_name: enigma2-recording-manager
     restart: unless-stopped
     ports:
-      - "8080:8000"
+      - "8090:8000"
     environment:
       ENIGMA_HOST: "192.168.0.5"
       ENIGMA_PORT: "80"
