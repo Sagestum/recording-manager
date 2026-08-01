@@ -7,13 +7,24 @@ festgelegten Anzahl Tage löscht — ideal als Ergänzung zu AutoTimer-Liste.
 ## Seiten
 
 - **Aufnahmen** – alle abgeschlossenen Aufnahmen auf der Festplatte, inkl. Anzeige,
-  welches Muster greift und wann gelöscht wird. Manuelles Löschen ist ebenfalls möglich.
-- **Timer** – kommende / laufende Timer (inkl. der von AutoTimer-Liste erzeugten).
-- **Muster** – Verwaltung der Lösch-Regeln, z. B. "Newstime" → nach 3 Tagen löschen.
-  Optional als Regex. Nur Aufnahmen mit passendem Muster werden je gelöscht.
+  welches Muster greift und wann gelöscht wird. Löschen einzeln oder per Mehrfachauswahl
+  (Checkboxen + "Ausgewählte löschen").
+- **Timer** – kommende / laufende Timer (inkl. der von AutoTimer-Liste erzeugten), inkl.
+  Priorität, Verschlüsselt-Status und manuellem Deaktivieren/Aktivieren.
+- **Konflikte** – erkennt Aufnahmen, die gleichzeitig laufen und entweder mehr Tuner
+  brauchen als vorhanden sind, oder mehr als einen verschlüsselten Sender gleichzeitig
+  entschlüsseln würden (CI+/CAM-Limit, z. B. Freenet.TV-Modul). Manuelles Deaktivieren
+  pro Timer, optional automatische Auflösung nach Priorität (niedrigere Priorität wird
+  deaktiviert) — standardmäßig **deaktiviert**, bis explizit aktiviert.
+- **Muster** – Verwaltung der Lösch-Regeln, z. B. "Newstime" → nach 3 Tagen löschen,
+  Priorität 10. Optional als Regex. Nur Aufnahmen mit passendem Muster werden gelöscht;
+  die Priorität wird auf der Konflikte-Seite zur Auflösung genutzt.
+- **Sender** – lädt die Sender-Playlist der Box (Favoriten-Bouquet als M3U) und lässt
+  markieren, welche Sender über das CI+-Modul entschlüsselt werden müssen. Zusätzlich
+  Einstellung der Tuner-Anzahl.
 - **Log** – Protokoll aller automatischen und manuellen Löschungen.
-- **Einstellungen** – Prüfintervall des Hintergrund-Jobs (Standard 6h), manueller
-  Sofort-Check, Verbindungsstatus zur Box.
+- **Einstellungen** – Prüfintervall des Aufräum-Jobs (Standard 6h), Standard-Löschfrist
+  für Aufnahmen ohne Muster, manueller Sofort-Check, Verbindungsstatus zur Box.
 
 ## Start
 
