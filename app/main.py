@@ -143,7 +143,7 @@ def timers_page(request: Request, auth=Depends(require_auth)):
     patterns = db.list_patterns()
     channels = db.list_channels()
     by_ref, by_name = conflicts.build_channel_lookup(channels)
-    default_priority = int(db.get_setting("default_priority", "0") or "0")
+    default_priority = int(db.get_setting("default_priority", "50") or "50")
 
     now = int(datetime.now(TZ).timestamp())
     rows = []
@@ -296,6 +296,7 @@ def settings_page(request: Request, auth=Depends(require_auth)):
             "request": request,
             "interval": db.get_setting("check_interval_hours", "6"),
             "default_retention_days": db.get_setting("default_retention_days", "0"),
+            "default_priority": db.get_setting("default_priority", "50"),
             "last_check_at": db.get_setting("last_check_at", ""),
             "last_check_summary": db.get_setting("last_check_summary", ""),
             "next_run": scheduler.next_run_time(),
@@ -312,10 +313,12 @@ def settings_page(request: Request, auth=Depends(require_auth)):
 def update_settings(
     interval_hours: int = Form(...),
     default_retention_days: int = Form(0),
+    default_priority: int = Form(50),
     auth=Depends(require_auth),
 ):
     db.set_setting("check_interval_hours", max(1, interval_hours))
     db.set_setting("default_retention_days", max(0, default_retention_days))
+    db.set_setting("default_priority", default_priority)
     scheduler.reschedule()
     return RedirectResponse(url="/settings", status_code=303)
 
@@ -375,7 +378,7 @@ def conflicts_page(request: Request, auth=Depends(require_auth)):
     patterns = db.list_patterns()
     channels = db.list_channels()
     tuner_count = int(db.get_setting("tuner_count", "2") or "2")
-    default_priority = int(db.get_setting("default_priority", "0") or "0")
+    default_priority = int(db.get_setting("default_priority", "50") or "50")
 
     results = conflicts.analyze(timers, patterns, channels, tuner_count, default_priority) if timers else []
     for cluster in results:
@@ -403,12 +406,10 @@ def conflicts_page(request: Request, auth=Depends(require_auth)):
 
 @app.post("/konflikte/settings")
 def update_conflict_settings(
-    default_priority: int = Form(0),
     conflict_check_interval_minutes: int = Form(30),
     auto_resolve: bool = Form(False),
     auth=Depends(require_auth),
 ):
-    db.set_setting("default_priority", default_priority)
     db.set_setting("conflict_check_interval_minutes", max(5, conflict_check_interval_minutes))
     db.set_setting("conflict_auto_resolve", "1" if auto_resolve else "0")
     scheduler.reschedule_conflicts()

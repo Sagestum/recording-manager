@@ -24,13 +24,20 @@
       Standard-Löschfrist (Tage, 0 = aus)
       <input type="number" name="default_retention_days" min="0" value="{{ default_retention_days }}">
     </label>
+    <label class="narrow">
+      Standard-Priorität (Konflikte)
+      <input type="number" name="default_priority" value="{{ default_priority }}" required>
+    </label>
     <button class="btn" type="submit">Speichern</button>
   </form>
   <p class="hint">
-    Greift für Aufnahmen, auf die kein Muster zutrifft — als Sicherheitsnetz, damit
-    nichts unbegrenzt liegen bleibt. Ein spezifisches Muster hat immer Vorrang,
-    egal ob dessen Frist kürzer oder länger ist. 0 = deaktiviert (Standardverhalten:
-    unmarkierte Aufnahmen bleiben unangetastet).
+    Standard-Löschfrist greift für Aufnahmen, auf die kein Muster zutrifft — als
+    Sicherheitsnetz, damit nichts unbegrenzt liegen bleibt. Ein spezifisches Muster
+    hat immer Vorrang, egal ob dessen Frist kürzer oder länger ist. 0 = deaktiviert
+    (unmarkierte Aufnahmen bleiben unangetastet).<br>
+    Standard-Priorität gilt für Timer ohne passendes Muster bei der
+    <a href="/konflikte">Konflikt-Auflösung</a> — ein Muster mit höherer Priorität
+    gewinnt.
   </p>
 
   <table class="kv-table">

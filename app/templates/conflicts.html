@@ -15,10 +15,6 @@
   <h2>Automatik</h2>
   <form method="post" action="/konflikte/settings" class="pattern-form">
     <label class="narrow">
-      Standard-Priorität (ohne Muster)
-      <input type="number" name="default_priority" value="{{ default_priority }}" required>
-    </label>
-    <label class="narrow">
       Prüfintervall (Minuten)
       <input type="number" name="conflict_check_interval_minutes" min="5" value="{{ conflict_interval }}" required>
     </label>
@@ -28,6 +24,10 @@
     </label>
     <button class="btn" type="submit">Speichern</button>
   </form>
+  <p class="hint">
+    Standard-Priorität für Timer ohne passendes Muster (aktuell {{ default_priority }}):
+    einstellbar unter <a href="/settings">Einstellungen</a>.
+  </p>
 
   <table class="kv-table">
     <tr><td>Letzter Check</td><td>{{ last_conflict_check_at | fmt_ts if last_conflict_check_at else '-' }}</td></tr>

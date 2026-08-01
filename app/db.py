@@ -60,7 +60,7 @@ _DEFAULT_SETTINGS = {
     "last_check_at": "",
     "last_check_summary": "",
     "tuner_count": "2",
-    "default_priority": "0",
+    "default_priority": "50",
     "playlist_url": DEFAULT_PLAYLIST_URL,
     "conflict_auto_resolve": "0",
     "conflict_check_interval_minutes": "30",

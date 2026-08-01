@@ -162,7 +162,7 @@ def run_conflict_check():
     patterns = db.list_patterns()
     channels = db.list_channels()
     tuner_count = int(db.get_setting("tuner_count", "2") or "2")
-    default_priority = int(db.get_setting("default_priority", "0") or "0")
+    default_priority = int(db.get_setting("default_priority", "50") or "50")
     auto_resolve = db.get_setting("conflict_auto_resolve", "0") == "1"
 
     results = analyze(timers, patterns, channels, tuner_count, default_priority)
