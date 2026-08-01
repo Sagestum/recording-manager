@@ -20,8 +20,18 @@
       Prüfintervall (Stunden)
       <input type="number" name="interval_hours" min="1" value="{{ interval }}" required>
     </label>
+    <label class="narrow">
+      Standard-Löschfrist (Tage, 0 = aus)
+      <input type="number" name="default_retention_days" min="0" value="{{ default_retention_days }}">
+    </label>
     <button class="btn" type="submit">Speichern</button>
   </form>
+  <p class="hint">
+    Greift für Aufnahmen, auf die kein Muster zutrifft — als Sicherheitsnetz, damit
+    nichts unbegrenzt liegen bleibt. Ein spezifisches Muster hat immer Vorrang,
+    egal ob dessen Frist kürzer oder länger ist. 0 = deaktiviert (Standardverhalten:
+    unmarkierte Aufnahmen bleiben unangetastet).
+  </p>
 
   <table class="kv-table">
     <tr><td>Letzter Check</td><td>{{ last_check_at | fmt_ts if last_check_at else '-' }}</td></tr>

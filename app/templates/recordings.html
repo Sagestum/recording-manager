@@ -2,7 +2,7 @@
 {% block title %}Aufnahmen{% endblock %}
 {% block content %}
 <h1>Abgeschlossene Aufnahmen</h1>
-<p class="hint">Aufnahmen, die bereits fertig auf der Festplatte liegen. Nur Aufnahmen mit passendem Muster werden automatisch gelöscht.</p>
+<p class="hint">Aufnahmen, die bereits fertig auf der Festplatte liegen. Gelöscht wird nur, wenn ein Muster zutrifft oder die Standardregel (siehe Einstellungen) aktiv ist.</p>
 
 {% if error %}
 <div class="banner error">Verbindung zur Box fehlgeschlagen: {{ error }}</div>

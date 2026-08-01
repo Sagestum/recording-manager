@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS deletion_log (
 
 _DEFAULT_SETTINGS = {
     "check_interval_hours": str(DEFAULT_CHECK_INTERVAL_HOURS),
+    "default_retention_days": "0",
     "last_check_at": "",
     "last_check_summary": "",
 }

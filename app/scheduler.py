@@ -33,6 +33,32 @@ def find_matching_pattern(eventname, patterns):
     return None
 
 
+DEFAULT_RULE_LABEL = "Alle Aufnahmen (Standardregel)"
+
+
+def get_default_retention_days():
+    try:
+        value = int(db.get_setting("default_retention_days", "0") or "0")
+    except (TypeError, ValueError):
+        return None
+    return value if value > 0 else None
+
+
+def resolve_rule(eventname, patterns):
+    """Ermittelt Muster-Name und Tage fuer eine Aufnahme.
+
+    Ein spezifisches Muster hat immer Vorrang vor der globalen Standardregel,
+    unabhaengig davon, ob dessen Frist kuerzer oder laenger ist.
+    """
+    match = find_matching_pattern(eventname, patterns)
+    if match:
+        return match["pattern"], match["days"]
+    default_days = get_default_retention_days()
+    if default_days:
+        return DEFAULT_RULE_LABEL, default_days
+    return None, None
+
+
 def run_check():
     """Aufnahmen laden, abgelaufene (nach Muster-Regel) loeschen."""
     log.info("Starte Aufraeum-Check")
@@ -52,12 +78,12 @@ def run_check():
     for movie in movies:
         checked += 1
         eventname = movie.get("eventname") or ""
-        match = find_matching_pattern(eventname, patterns)
-        if not match:
+        pattern_label, days = resolve_rule(eventname, patterns)
+        if days is None:
             continue
 
         recordingtime = movie.get("recordingtime") or 0
-        expiry = recordingtime + match["days"] * 86400
+        expiry = recordingtime + days * 86400
         if now < expiry:
             continue
 
@@ -70,11 +96,11 @@ def run_check():
         except Exception as exc:
             ok, message = False, str(exc)
 
-        db.log_deletion(eventname, movie.get("filename", ""), match["pattern"], recordingtime, ok, message)
+        db.log_deletion(eventname, movie.get("filename", ""), pattern_label, recordingtime, ok, message)
 
         if ok:
             deleted += 1
-            log.info("Geloescht: %s (Muster '%s')", eventname, match["pattern"])
+            log.info("Geloescht: %s (Regel '%s')", eventname, pattern_label)
         else:
             errors += 1
             log.warning("Loeschen fehlgeschlagen fuer %s: %s", eventname, message)

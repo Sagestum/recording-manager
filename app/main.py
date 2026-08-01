@@ -78,10 +78,8 @@ def recordings_page(request: Request, auth=Depends(require_auth)):
     rows = []
     for m in movies:
         eventname = m.get("eventname") or ""
-        match = scheduler.find_matching_pattern(eventname, patterns)
-        expiry = None
-        if match:
-            expiry = (m.get("recordingtime") or 0) + match["days"] * 86400
+        pattern_label, days = scheduler.resolve_rule(eventname, patterns)
+        expiry = (m.get("recordingtime") or 0) + days * 86400 if days else None
         rows.append(
             {
                 "eventname": eventname,
@@ -90,8 +88,8 @@ def recordings_page(request: Request, auth=Depends(require_auth)):
                 "filesize_readable": m.get("filesize_readable", ""),
                 "length": m.get("length", ""),
                 "serviceref": m.get("serviceref") or m.get("fullname"),
-                "pattern": match["pattern"] if match else None,
-                "days": match["days"] if match else None,
+                "pattern": pattern_label,
+                "days": days,
                 "expiry": expiry,
                 "expired": bool(expiry and now >= expiry),
             }
@@ -215,6 +213,7 @@ def settings_page(request: Request, auth=Depends(require_auth)):
         {
             "request": request,
             "interval": db.get_setting("check_interval_hours", "6"),
+            "default_retention_days": db.get_setting("default_retention_days", "0"),
             "last_check_at": db.get_setting("last_check_at", ""),
             "last_check_summary": db.get_setting("last_check_summary", ""),
             "next_run": scheduler.next_run_time(),
@@ -228,8 +227,13 @@ def settings_page(request: Request, auth=Depends(require_auth)):
 
 
 @app.post("/settings")
-def update_settings(interval_hours: int = Form(...), auth=Depends(require_auth)):
+def update_settings(
+    interval_hours: int = Form(...),
+    default_retention_days: int = Form(0),
+    auth=Depends(require_auth),
+):
     db.set_setting("check_interval_hours", max(1, interval_hours))
+    db.set_setting("default_retention_days", max(0, default_retention_days))
     scheduler.reschedule()
     return RedirectResponse(url="/settings", status_code=303)
 
