@@ -37,8 +37,8 @@
   <th>Muster</th>
   <th>Tage</th>
   <th>Priorität</th>
-  <th>Regex</th>
-  <th>Aktiv</th>
+  <th class="checkbox-col">Regex</th>
+  <th class="checkbox-col">Aktiv</th>
   <th></th>
 </tr>
 </thead>
@@ -48,8 +48,8 @@
   <td><input type="text" name="pattern" value="{{ p.pattern }}" form="pf-{{ p.id }}" required></td>
   <td class="narrow"><input type="number" name="days" min="1" value="{{ p.days }}" form="pf-{{ p.id }}" required></td>
   <td class="narrow"><input type="number" name="priority" value="{{ p.priority }}" form="pf-{{ p.id }}" required></td>
-  <td><input type="checkbox" name="is_regex" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.is_regex }}></td>
-  <td><input type="checkbox" name="enabled" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.enabled }}></td>
+  <td class="checkbox-col"><input type="checkbox" name="is_regex" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.is_regex }}></td>
+  <td class="checkbox-col"><input type="checkbox" name="enabled" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.enabled }}></td>
   <td class="actions">
     <form id="pf-{{ p.id }}" method="post" action="/patterns/{{ p.id }}/update" class="inline-form"></form>
     <button class="btn small" type="submit" form="pf-{{ p.id }}">Speichern</button>

@@ -35,14 +35,14 @@
   <thead>
   <tr>
     <th>Sender</th>
-    <th>Verschlüsselt (CI+)</th>
+    <th class="checkbox-col" title="Verschlüsselt (CI+)">Verschl.</th>
   </tr>
   </thead>
   <tbody>
   {% for c in channels %}
   <tr>
     <td>{{ c.name }}</td>
-    <td><input type="checkbox" name="encrypted_ids" value="{{ c.id }}" {{ 'checked' if c.encrypted }}></td>
+    <td class="checkbox-col"><input type="checkbox" name="encrypted_ids" value="{{ c.id }}" {{ 'checked' if c.encrypted }}></td>
   </tr>
   {% else %}
   <tr><td colspan="2">Noch keine Sender geladen — oben "Neu laden" klicken.</td></tr>

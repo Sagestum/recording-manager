@@ -10,6 +10,7 @@
   --danger-bg: #fdecea;
   --ok: #16a34a;
   --ok-bg: #eafaf0;
+  --checked-bg: #cfe2ff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +25,7 @@
     --danger-bg: #3a1e1c;
     --ok: #3ecf71;
     --ok-bg: #16301f;
+    --checked-bg: #294a7a;
   }
 }
 
@@ -112,7 +114,9 @@ h2 { font-size: 1.05rem; margin-top: 0; }
   margin-bottom: 0.75rem;
 }
 
-.checkbox-col { width: 2rem; text-align: center; }
+.checkbox-col { width: 2.25rem; text-align: center; }
+.checkbox-col input[type="checkbox"] { margin: 0; }
+td.checkbox-col:has(input:checked) { background: var(--checked-bg); }
 
 .tag {
   display: inline-block;
