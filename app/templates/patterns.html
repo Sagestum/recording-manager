@@ -8,6 +8,26 @@
   genutzt: Bei gleichzeitigen Aufnahmen gewinnt die höhere Priorität.
 </p>
 
+{% if synced is not none %}
+<div class="banner ok">{{ synced }} neue Muster aus AutoTimer übernommen{% if skipped and skipped != "0" %}, {{ skipped }} bereits vorhanden{% endif %}.</div>
+{% endif %}
+{% if sync_error %}
+<div class="banner error">AutoTimer-Liste konnte nicht geladen werden: {{ sync_error }}</div>
+{% endif %}
+
+<div class="card">
+  <h2>Aus AutoTimer synchronisieren</h2>
+  <p class="hint">
+    Übernimmt alle Regeln aus dem AutoTimer-Plugin der Box als Muster
+    (Standard-Löschfrist bzw. 3 Tage falls deaktiviert, Priorität {{ default_priority }} —
+    beides unter <a href="/settings">Einstellungen</a> änderbar). Bereits vorhandene Muster
+    (gleicher Text) werden nicht verändert.
+  </p>
+  <form method="post" action="/patterns/sync-autotimer">
+    <button class="btn" type="submit">Jetzt synchronisieren</button>
+  </form>
+</div>
+
 <div class="card">
   <h2>Neues Muster</h2>
   <form method="post" action="/patterns" class="pattern-form">

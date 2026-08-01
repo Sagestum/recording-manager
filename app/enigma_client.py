@@ -1,5 +1,6 @@
 import logging
 import re
+from xml.etree import ElementTree
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -67,6 +68,29 @@ def set_timer_disabled(timer, disabled):
     }
     data = _get("/api/timerchange", params=params)
     return bool(data.get("result")), data.get("message", "")
+
+
+def get_autotimers():
+    """Liest die Regeln des AutoTimer-Plugins direkt aus dessen XML-Endpunkt
+    (nicht Teil der regulaeren OpenWebif-/api/-JSON-API)."""
+    url = f"{ENIGMA_BASE_URL}/autotimer"
+    resp = requests.get(url, auth=_auth(), timeout=15)
+    resp.raise_for_status()
+    root = ElementTree.fromstring(resp.text)
+    entries = []
+    for timer_el in root.findall("timer"):
+        name = (timer_el.get("name") or "").strip()
+        match = (timer_el.get("match") or name).strip()
+        if not match:
+            continue
+        entries.append(
+            {
+                "name": name,
+                "match": match,
+                "enabled": timer_el.get("enabled", "yes") == "yes",
+            }
+        )
+    return entries
 
 
 def get_channels_playlist(url_or_path):

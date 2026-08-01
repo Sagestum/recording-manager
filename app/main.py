@@ -236,8 +236,40 @@ def toggle_timer(
 def patterns_page(request: Request, auth=Depends(require_auth)):
     patterns = db.list_patterns()
     return templates.TemplateResponse(
-        "patterns.html", {"request": request, "patterns": patterns, "active": "patterns"}
+        "patterns.html",
+        {
+            "request": request,
+            "patterns": patterns,
+            "active": "patterns",
+            "synced": request.query_params.get("synced"),
+            "skipped": request.query_params.get("skipped"),
+            "sync_error": request.query_params.get("sync_error"),
+            "default_priority": db.get_setting("default_priority", "50"),
+        },
     )
+
+
+@app.post("/patterns/sync-autotimer")
+def sync_autotimer_patterns(auth=Depends(require_auth)):
+    try:
+        autotimers = enigma_client.get_autotimers()
+    except Exception as exc:
+        return RedirectResponse(url=f"/patterns?sync_error={exc}", status_code=303)
+
+    existing = {p["pattern"].strip().lower() for p in db.list_patterns()}
+    days = int(db.get_setting("default_retention_days", "0") or "0") or 3
+    priority = int(db.get_setting("default_priority", "50") or "50")
+
+    synced = 0
+    for entry in autotimers:
+        if entry["match"].strip().lower() in existing:
+            continue
+        db.add_pattern(entry["match"], days, False, entry["enabled"], priority)
+        existing.add(entry["match"].strip().lower())
+        synced += 1
+
+    skipped = len(autotimers) - synced
+    return RedirectResponse(url=f"/patterns?synced={synced}&skipped={skipped}", status_code=303)
 
 
 @app.post("/patterns")
