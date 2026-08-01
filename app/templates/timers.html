@@ -12,7 +12,7 @@
 <table class="data-table">
 <thead>
 <tr>
-  <th>Titel</th>
+  <th class="title-col">Titel</th>
   <th>Sender</th>
   <th>Beginn</th>
   <th>Ende</th>
@@ -24,7 +24,7 @@
 <tbody>
 {% for r in rows %}
 <tr>
-  <td>{{ r.name }}</td>
+  <td class="title-col">{{ r.name }}</td>
   <td>{{ r.servicename }} {% if r.encrypted %}<span class="badge">🔒</span>{% endif %}</td>
   <td>{{ r.begin | fmt_ts }}</td>
   <td>{{ r.end | fmt_ts }}</td>

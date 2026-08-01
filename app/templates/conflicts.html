@@ -62,7 +62,7 @@
   <table class="data-table">
   <thead>
   <tr>
-    <th>Titel</th>
+    <th class="title-col">Titel</th>
     <th>Sender</th>
     <th>Beginn</th>
     <th>Ende</th>
@@ -75,7 +75,7 @@
   <tbody>
   {% for t in cluster.timers %}
   <tr>
-    <td>{{ t.name }}</td>
+    <td class="title-col">{{ t.name }}</td>
     <td>{{ t.servicename }} {% if t.encrypted %}<span class="badge">🔒</span>{% endif %}</td>
     <td>{{ t.begin | fmt_ts }}</td>
     <td>{{ t.end | fmt_ts }}</td>

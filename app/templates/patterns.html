@@ -34,7 +34,7 @@
 <table class="data-table">
 <thead>
 <tr>
-  <th>Muster</th>
+  <th class="title-col">Muster</th>
   <th>Tage</th>
   <th>Priorität</th>
   <th class="checkbox-col">Regex</th>
@@ -45,7 +45,7 @@
 <tbody>
 {% for p in patterns %}
 <tr>
-  <td><input type="text" name="pattern" value="{{ p.pattern }}" form="pf-{{ p.id }}" required></td>
+  <td class="title-col"><input type="text" name="pattern" value="{{ p.pattern }}" form="pf-{{ p.id }}" required></td>
   <td class="narrow"><input type="number" name="days" min="1" value="{{ p.days }}" form="pf-{{ p.id }}" required></td>
   <td class="narrow"><input type="number" name="priority" value="{{ p.priority }}" form="pf-{{ p.id }}" required></td>
   <td class="checkbox-col"><input type="checkbox" name="is_regex" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.is_regex }}></td>

@@ -23,7 +23,7 @@
 <thead>
 <tr>
   <th class="checkbox-col"><input type="checkbox" id="select-all"></th>
-  <th>Titel</th>
+  <th class="title-col">Titel</th>
   <th>Sender</th>
   <th>Aufgenommen am</th>
   <th>Länge</th>
@@ -39,7 +39,7 @@
   <td class="checkbox-col">
     <input type="checkbox" class="row-select" name="selected" value="{{ r.row_value }}" form="bulk-delete-form">
   </td>
-  <td>{{ r.eventname }}</td>
+  <td class="title-col">{{ r.eventname }}</td>
   <td>{{ r.servicename }}</td>
   <td>{{ r.recordingtime | fmt_ts }}</td>
   <td>{{ r.length }}</td>

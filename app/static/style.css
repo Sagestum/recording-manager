@@ -91,7 +91,7 @@ h2 { font-size: 1.05rem; margin-top: 0; }
 .data-table th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr.expired { background: var(--danger-bg); }
-.data-table td:first-child, .data-table th:first-child { white-space: normal; min-width: 220px; }
+.data-table .title-col { white-space: normal; min-width: 220px; }
 
 .data-table input[type="text"], .data-table input[type="number"] {
   width: 100%;
@@ -114,7 +114,7 @@ h2 { font-size: 1.05rem; margin-top: 0; }
   margin-bottom: 0.75rem;
 }
 
-.checkbox-col { width: 2.25rem; text-align: center; }
+.checkbox-col { width: 2.25rem; max-width: 2.25rem; padding: 0.5rem 0 !important; text-align: center; }
 .checkbox-col input[type="checkbox"] { margin: 0; }
 td.checkbox-col:has(input:checked) { background: var(--checked-bg); }
 
