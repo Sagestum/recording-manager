@@ -1,4 +1,5 @@
 import logging
+import re
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -6,6 +7,10 @@ from requests.auth import HTTPBasicAuth
 from .config import ENIGMA_BASE_URL, ENIGMA_PASS, ENIGMA_USER
 
 log = logging.getLogger("enigma_client")
+
+_M3U_ENTRY_RE = re.compile(
+    r'tvg-id="(?P<ref>[^"]*)"\s+tvg-name="(?P<name>[^"]*)"'
+)
 
 
 def _auth():
@@ -40,3 +45,41 @@ def delete_movie(service_ref):
 
 def get_status():
     return _get("/api/statusinfo")
+
+
+def set_timer_disabled(timer, disabled):
+    """timer: dict mit mind. serviceref, begin, end (aus /api/timerlist).
+    Nutzt exakt die Parameter, die OpenWebif fuer /api/timerchange erwartet.
+    """
+    params = {
+        "sRef": timer.get("serviceref", ""),
+        "channelOld": timer.get("serviceref", ""),
+        "beginOld": timer.get("begin", 0),
+        "endOld": timer.get("end", 0),
+        "begin": timer.get("begin", 0),
+        "end": timer.get("end", 0),
+        "name": timer.get("name", ""),
+        "description": timer.get("description", ""),
+        "disabled": int(bool(disabled)),
+        "eit": timer.get("eit", 0),
+        "justplay": timer.get("justplay", 0),
+        "repeated": timer.get("repeated", 0),
+    }
+    data = _get("/api/timerchange", params=params)
+    return bool(data.get("result")), data.get("message", "")
+
+
+def get_channels_playlist(url_or_path):
+    url = url_or_path if url_or_path.startswith("http") else f"{ENIGMA_BASE_URL}{url_or_path}"
+    resp = requests.get(url, auth=_auth(), timeout=15)
+    resp.raise_for_status()
+    channels = []
+    seen = set()
+    for match in _M3U_ENTRY_RE.finditer(resp.text):
+        ref = match.group("ref").strip()
+        name = match.group("name").strip()
+        if not ref or ref in seen:
+            continue
+        seen.add(ref)
+        channels.append({"service_ref": ref, "name": name})
+    return channels

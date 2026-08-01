@@ -2,7 +2,7 @@
 {% block title %}Timer{% endblock %}
 {% block content %}
 <h1>Kommende Aufnahmen (Timer)</h1>
-<p class="hint">Alle geplanten Timer, inklusive der von AutoTimer-Liste automatisch angelegten.</p>
+<p class="hint">Alle geplanten Timer, inklusive der von AutoTimer-Liste automatisch angelegten. Konflikte werden auf der Seite <a href="/konflikte">Konflikte</a> ausgewertet.</p>
 
 {% if error %}
 <div class="banner error">Verbindung zur Box fehlgeschlagen: {{ error }}</div>
@@ -16,20 +16,42 @@
   <th>Sender</th>
   <th>Beginn</th>
   <th>Ende</th>
+  <th>Priorität</th>
   <th>Status</th>
+  <th></th>
 </tr>
 </thead>
 <tbody>
 {% for r in rows %}
 <tr>
   <td>{{ r.name }}</td>
-  <td>{{ r.servicename }}</td>
+  <td>{{ r.servicename }} {% if r.encrypted %}<span class="badge">🔒</span>{% endif %}</td>
   <td>{{ r.begin | fmt_ts }}</td>
   <td>{{ r.end | fmt_ts }}</td>
-  <td><span class="badge status-{{ r.status }}">{{ r.status }}</span></td>
+  <td>{{ r.priority }}</td>
+  <td><span class="badge status-badge">{{ r.status }}</span></td>
+  <td class="actions">
+    <form method="post" action="/timers/toggle" class="inline-form-visible">
+      <input type="hidden" name="serviceref" value="{{ r.toggle_fields.serviceref }}">
+      <input type="hidden" name="begin" value="{{ r.toggle_fields.begin }}">
+      <input type="hidden" name="end" value="{{ r.toggle_fields.end }}">
+      <input type="hidden" name="name" value="{{ r.toggle_fields.name }}">
+      <input type="hidden" name="description" value="{{ r.toggle_fields.description }}">
+      <input type="hidden" name="eit" value="{{ r.toggle_fields.eit }}">
+      <input type="hidden" name="justplay" value="{{ r.toggle_fields.justplay }}">
+      <input type="hidden" name="repeated" value="{{ r.toggle_fields.repeated }}">
+      <input type="hidden" name="disabled" value="{{ r.toggle_fields.disabled }}">
+      <input type="hidden" name="redirect_to" value="/timers">
+      {% if r.disabled %}
+        <button class="btn small" type="submit">Aktivieren</button>
+      {% else %}
+        <button class="btn small danger" type="submit">Deaktivieren</button>
+      {% endif %}
+    </form>
+  </td>
 </tr>
 {% else %}
-<tr><td colspan="5">Keine Timer gefunden.</td></tr>
+<tr><td colspan="7">Keine Timer gefunden.</td></tr>
 {% endfor %}
 </tbody>
 </table>

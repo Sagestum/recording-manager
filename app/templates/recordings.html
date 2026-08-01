@@ -8,10 +8,21 @@
 <div class="banner error">Verbindung zur Box fehlgeschlagen: {{ error }}</div>
 {% endif %}
 
+<form id="bulk-delete-form" method="post" action="/recordings/bulk-delete"
+      onsubmit="return confirm('Ausgewählte Aufnahmen wirklich löschen?');"></form>
+
+<div class="toolbar">
+  <button class="btn small danger" type="submit" form="bulk-delete-form" id="bulk-delete-btn" disabled>
+    Ausgewählte löschen
+  </button>
+  <span class="hint" id="bulk-select-count"></span>
+</div>
+
 <div class="table-wrap">
 <table class="data-table">
 <thead>
 <tr>
+  <th class="checkbox-col"><input type="checkbox" id="select-all"></th>
   <th>Titel</th>
   <th>Sender</th>
   <th>Aufgenommen am</th>
@@ -25,6 +36,9 @@
 <tbody>
 {% for r in rows %}
 <tr class="{{ 'expired' if r.expired else '' }}">
+  <td class="checkbox-col">
+    <input type="checkbox" class="row-select" name="selected" value="{{ r.row_value }}" form="bulk-delete-form">
+  </td>
   <td>{{ r.eventname }}</td>
   <td>{{ r.servicename }}</td>
   <td>{{ r.recordingtime | fmt_ts }}</td>
@@ -54,9 +68,38 @@
   </td>
 </tr>
 {% else %}
-<tr><td colspan="8">Keine Aufnahmen gefunden.</td></tr>
+<tr><td colspan="9">Keine Aufnahmen gefunden.</td></tr>
 {% endfor %}
 </tbody>
 </table>
 </div>
+
+<script>
+(function () {
+  var selectAll = document.getElementById("select-all");
+  var rowBoxes = Array.prototype.slice.call(document.querySelectorAll(".row-select"));
+  var bulkBtn = document.getElementById("bulk-delete-btn");
+  var countLabel = document.getElementById("bulk-select-count");
+
+  function updateState() {
+    var checked = rowBoxes.filter(function (cb) { return cb.checked; });
+    bulkBtn.disabled = checked.length === 0;
+    countLabel.textContent = checked.length ? checked.length + " ausgewählt" : "";
+  }
+
+  if (selectAll) {
+    selectAll.addEventListener("change", function () {
+      rowBoxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+      updateState();
+    });
+  }
+  rowBoxes.forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      if (!cb.checked) selectAll.checked = false;
+      updateState();
+    });
+  });
+  updateState();
+})();
+</script>
 {% endblock %}

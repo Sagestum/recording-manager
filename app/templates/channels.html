@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Sender{% endblock %}
+{% block content %}
+<h1>Sender</h1>
+<p class="hint">
+  Sender, die über das Freenet.TV CI+-Modul entschlüsselt werden müssen, hier markieren.
+  Das Modul kann immer nur einen verschlüsselten Sender gleichzeitig entschlüsseln —
+  das fließt zusammen mit der Tuner-Anzahl in die <a href="/konflikte">Konflikt-Erkennung</a> ein.
+</p>
+
+<div class="card">
+  <h2>Sender-Liste (Playlist)</h2>
+  <form method="post" action="/channels/refresh" class="pattern-form">
+    <label>
+      Playlist-URL (M3U-Export des Favoriten-Bouquets)
+      <input type="text" name="playlist_url" value="{{ playlist_url }}" required>
+    </label>
+    <button class="btn" type="submit">Neu laden</button>
+  </form>
+</div>
+
+<form method="post" action="/channels/save">
+  <div class="card">
+    <h2>Tuner</h2>
+    <label class="pattern-form">
+      <span style="display:flex; flex-direction:column; gap:0.3rem;">
+        Anzahl gleichzeitig nutzbarer Tuner
+        <input type="number" name="tuner_count" min="1" value="{{ tuner_count }}" required style="width:6rem;">
+      </span>
+    </label>
+  </div>
+
+  <div class="table-wrap">
+  <table class="data-table">
+  <thead>
+  <tr>
+    <th>Sender</th>
+    <th>Verschlüsselt (CI+)</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for c in channels %}
+  <tr>
+    <td>{{ c.name }}</td>
+    <td><input type="checkbox" name="encrypted_ids" value="{{ c.id }}" {{ 'checked' if c.encrypted }}></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="2">Noch keine Sender geladen — oben "Neu laden" klicken.</td></tr>
+  {% endfor %}
+  </tbody>
+  </table>
+  </div>
+
+  <div class="toolbar" style="margin-top: 1rem;">
+    <button class="btn" type="submit">Speichern</button>
+  </div>
+</form>
+{% endblock %}

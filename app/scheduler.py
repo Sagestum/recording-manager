@@ -1,62 +1,23 @@
 import logging
-import re
 import threading
 import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from . import db, enigma_client
+from .matching import (  # noqa: F401 (re-exported for main.py / templates)
+    DEFAULT_RULE_LABEL,
+    find_matching_pattern,
+    get_default_retention_days,
+    pattern_matches,
+    resolve_rule,
+)
 
 log = logging.getLogger("scheduler")
 
 _scheduler = BackgroundScheduler()
 _job = None
-
-
-def pattern_matches(pattern_row, eventname):
-    text = eventname or ""
-    if pattern_row["is_regex"]:
-        try:
-            return re.search(pattern_row["pattern"], text, re.IGNORECASE) is not None
-        except re.error:
-            log.warning("Ungueltiges Regex-Muster ignoriert: %s", pattern_row["pattern"])
-            return False
-    return pattern_row["pattern"].lower() in text.lower()
-
-
-def find_matching_pattern(eventname, patterns):
-    for p in patterns:
-        if not p["enabled"]:
-            continue
-        if pattern_matches(p, eventname):
-            return p
-    return None
-
-
-DEFAULT_RULE_LABEL = "Alle Aufnahmen (Standardregel)"
-
-
-def get_default_retention_days():
-    try:
-        value = int(db.get_setting("default_retention_days", "0") or "0")
-    except (TypeError, ValueError):
-        return None
-    return value if value > 0 else None
-
-
-def resolve_rule(eventname, patterns):
-    """Ermittelt Muster-Name und Tage fuer eine Aufnahme.
-
-    Ein spezifisches Muster hat immer Vorrang vor der globalen Standardregel,
-    unabhaengig davon, ob dessen Frist kuerzer oder laenger ist.
-    """
-    match = find_matching_pattern(eventname, patterns)
-    if match:
-        return match["pattern"], match["days"]
-    default_days = get_default_retention_days()
-    if default_days:
-        return DEFAULT_RULE_LABEL, default_days
-    return None, None
+_conflict_job = None
 
 
 def run_check():
@@ -118,25 +79,59 @@ def _interval_hours():
         return 6
 
 
+def _conflict_interval_minutes():
+    try:
+        return max(5, int(float(db.get_setting("conflict_check_interval_minutes", "30"))))
+    except (TypeError, ValueError):
+        return 30
+
+
 def reschedule():
     global _job
     hours = _interval_hours()
     _job = _scheduler.add_job(
         run_check, "interval", hours=hours, id="recording_check", replace_existing=True
     )
-    log.info("Hintergrund-Job neu geplant: alle %s Stunden", hours)
+    log.info("Aufraeum-Job neu geplant: alle %s Stunden", hours)
+
+
+def reschedule_conflicts():
+    global _conflict_job
+    from . import conflicts  # spaeter Import verhindert Zirkularitaet beim Modul-Laden
+
+    minutes = _conflict_interval_minutes()
+    _conflict_job = _scheduler.add_job(
+        conflicts.run_conflict_check,
+        "interval",
+        minutes=minutes,
+        id="conflict_check",
+        replace_existing=True,
+    )
+    log.info("Konflikt-Job neu geplant: alle %s Minuten", minutes)
 
 
 def next_run_time():
     return _job.next_run_time if _job is not None else None
 
 
+def next_conflict_run_time():
+    return _conflict_job.next_run_time if _conflict_job is not None else None
+
+
 def run_check_async():
     threading.Thread(target=run_check, daemon=True).start()
+
+
+def run_conflict_check_async():
+    from . import conflicts
+
+    threading.Thread(target=conflicts.run_conflict_check, daemon=True).start()
 
 
 def start():
     if not _scheduler.running:
         _scheduler.start()
     reschedule()
+    reschedule_conflicts()
     run_check_async()
+    run_conflict_check_async()

@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Muster{% endblock %}
 {% block content %}
-<h1>Lösch-Muster</h1>
-<p class="hint">Trifft der Titel einer Aufnahme auf ein Muster zu, wird sie nach der angegebenen Anzahl Tage automatisch gelöscht. Aufnahmen ohne passendes Muster bleiben unangetastet.</p>
+<h1>Muster</h1>
+<p class="hint">
+  Trifft der Titel einer Aufnahme auf ein Muster zu, wird sie nach der angegebenen Anzahl Tage
+  automatisch gelöscht. Die Priorität wird zusätzlich auf der Seite <a href="/konflikte">Konflikte</a>
+  genutzt: Bei gleichzeitigen Aufnahmen gewinnt die höhere Priorität.
+</p>
 
 <div class="card">
   <h2>Neues Muster</h2>
@@ -14,6 +18,10 @@
     <label class="narrow">
       Löschen nach (Tage)
       <input type="number" name="days" min="1" value="3" required>
+    </label>
+    <label class="narrow">
+      Priorität
+      <input type="number" name="priority" value="0" required>
     </label>
     <label class="checkbox">
       <input type="checkbox" name="is_regex" value="true"> als Regex interpretieren
@@ -28,6 +36,7 @@
 <tr>
   <th>Muster</th>
   <th>Tage</th>
+  <th>Priorität</th>
   <th>Regex</th>
   <th>Aktiv</th>
   <th></th>
@@ -38,6 +47,7 @@
 <tr>
   <td><input type="text" name="pattern" value="{{ p.pattern }}" form="pf-{{ p.id }}" required></td>
   <td class="narrow"><input type="number" name="days" min="1" value="{{ p.days }}" form="pf-{{ p.id }}" required></td>
+  <td class="narrow"><input type="number" name="priority" value="{{ p.priority }}" form="pf-{{ p.id }}" required></td>
   <td><input type="checkbox" name="is_regex" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.is_regex }}></td>
   <td><input type="checkbox" name="enabled" value="true" form="pf-{{ p.id }}" {{ 'checked' if p.enabled }}></td>
   <td class="actions">
@@ -49,7 +59,7 @@
   </td>
 </tr>
 {% else %}
-<tr><td colspan="5">Noch keine Muster angelegt.</td></tr>
+<tr><td colspan="6">Noch keine Muster angelegt.</td></tr>
 {% endfor %}
 </tbody>
 </table>
